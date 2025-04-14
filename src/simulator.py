@@ -1,6 +1,7 @@
 from typing import List
 from renderer import *
 from physics_engine import PhysicsEngine 
+import time
 import pygame as pg
 
 class Simulator():
@@ -8,6 +9,8 @@ class Simulator():
         self.renderer = Renderer(800, 400)
         self.physics = PhysicsEngine()
         self.running = True
+        self.simulation_start = time.perf_counter()
+        self.total_time = 0.0
     
     def check_for_close(self):
         for event in pg.event.get():
@@ -16,7 +19,9 @@ class Simulator():
     
     def main_loop(self):
         while self.running:
-            self.physics.physics_process()
+            self.physics.physics_process(self.total_time)
             self.renderer.render_process(self.physics.get_bodies())
+
+            self.total_time = time.perf_counter() - self.simulation_start
             self.check_for_close()
 

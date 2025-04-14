@@ -6,14 +6,28 @@ class Renderer():
     def __init__(self, width:int = 0, height:int = 0):
         self.WIDTH = width
         self.HEIGHT = height
+        self.METER = width / 10
         self.screen = pg.display.set_mode((width, height), vsync=1)
+        self.ground_height = self.HEIGHT * 0.25
+    
+    def flip_y(self, y: float):
+        return self.HEIGHT - y
     
     def draw_bodies(self, bodies: List[Body]):
         for body in bodies:
-            pg.draw.circle(self.screen, "red", body.position * 0.1, body.mass * 20)
+            x = (body.position.x + body.radius) * self.METER
+            y = self.flip_y((body.position.y + body.radius) * self.METER + self.ground_height)
+            pg.draw.circle(self.screen, "chocolate2", (x,y), body.radius * self.METER)
+    
+    def draw_background(self):
+        self.screen.fill('aquamarine3')
+        new_y = self.flip_y(self.ground_height)
+        ground_rect = pg.Rect(0, new_y, self.WIDTH, self.HEIGHT)
+        pg.draw.rect(self.screen, 'black', ground_rect)
     
     def render_process(self, bodies: List[Body]):
         self.screen.fill('black')
+        self.draw_background()
         self.draw_bodies(bodies)
         pg.display.flip()
         
