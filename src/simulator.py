@@ -11,6 +11,7 @@ class Simulator():
         self.running = True
         self.simulation_start = time.perf_counter()
         self.total_time = 0.0
+        self.delta_time = 0.0
     
     def check_for_close(self):
         for event in pg.event.get():
@@ -19,8 +20,11 @@ class Simulator():
     
     def main_loop(self):
         while self.running:
-            self.physics.physics_process(self.total_time)
+            delta_start = time.perf_counter()
+            self.physics.physics_process(self.delta_time)
             self.renderer.render_process(self.physics.get_bodies())
+            delta_end = time.perf_counter()
+            self.delta_time = delta_end - delta_start
 
             self.total_time = time.perf_counter() - self.simulation_start
             self.check_for_close()

@@ -10,3 +10,10 @@ class Body():
         self.acceleration = acceleration
         self.initial_pos = Vec(position)
         self.initial_velocity = Vec(velocity)
+    
+    def did_collide_with_floor(self) -> bool:
+        return self.radius >= self.position.y
+    
+    def handle_floor_collision(self):
+        self.position.y = self.radius
+        self.velocity.y = 0
