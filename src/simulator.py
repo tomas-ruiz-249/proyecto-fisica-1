@@ -19,13 +19,24 @@ class Simulator():
                 self.running = False
     
     def main_loop(self):
+        # num_bodies = int(input('select the number of bodies\n'))
+        num_bodies = 1
+        for i in range(num_bodies):
+            body = Body(velocity=Vec(4,5))
+            self.physics.bodies.append(body)
+
+        static_body = Body(velocity=Vec(-1,5))
+        static_body.position.x = 9
+        self.physics.bodies.append(static_body)
+
         while self.running:
             delta_start = time.perf_counter()
-            self.physics.physics_process(self.delta_time)
-            self.renderer.render_process(self.physics.get_bodies())
-            delta_end = time.perf_counter()
-            self.delta_time = delta_end - delta_start
 
-            self.total_time = time.perf_counter() - self.simulation_start
+            a = time.perf_counter()
+            self.physics.physics_process(self.delta_time)
+            a = time.perf_counter() - a 
+            self.renderer.render_process(self.physics.bodies)
+
+            self.delta_time = time.perf_counter() - delta_start
             self.check_for_close()
 
