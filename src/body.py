@@ -7,13 +7,11 @@ class Body():
                  position: Vec = None,
                  velocity: Vec = None,
                  acceleration: Vec = None,
-                 radius: float = 0):
+                 name: str = None):
 
         self.mass = mass
-        if(radius == 0):
-            self.radius = mass * 0.3
-        else:
-            self.radius = radius
+        self.radius = mass * 0.3
+        self.body_id = name
 
         if position == None:
             self.position = Vec(0, self.radius) 
@@ -32,17 +30,29 @@ class Body():
 
 
     def is_at_rest(self) -> bool:
-        return self.radius == self.position.y and self.velocity.magnitude() == 0
+        return self.radius == self.position.y and self.velocity.magnitude() < 0.1
 
     def did_collide_with_body(self, b: "Body") -> bool:
         dist = sqrt((self.position.x - b.position.x)**2 + (self.position.y - b.position.y)**2)
         return dist <= self.radius + b.radius
     
-    def handle_body_collision(self, b: "Body"):
+    def handle_body_collision(self, b: "Body", elasticity: float):
+        #if intersecting, put one circle outside the other
+        ideal_dist = self.radius + b.radius
+        real_dist = sqrt((self.position.x - b.position.x)**2 + (self.position.y - b.position.y)**2)
+        offset = ideal_dist - real_dist
+        angle = atan2(self.position.x - b.position.x, self.position.y - b.position.y)
+        offset_x = offset * sin(angle)
+        offset_y = offset * cos(angle)
+        self.position.x += offset_x
+        self.position.y += offset_y
+
+        #change circle velocity
         new_vel = ((2*b.mass*b.velocity.magnitude())+(self.mass - b.mass) * self.velocity.magnitude())/(self.mass + b.mass)
-        angle = atan2(self.velocity.y, self.velocity.x) + pi
-        self.velocity.x = new_vel * cos(angle)
-        self.velocity.y = new_vel * sin(angle)
+        new_vel *= elasticity
+        new_angle = atan2(self.velocity.y, self.velocity.x) + pi
+        self.velocity.x = new_vel * cos(new_angle)
+        self.velocity.y = new_vel * sin(new_angle)
     
     def did_collide_with_floor(self) -> bool:
         return self.radius >= self.position.y and self.velocity.y < 0
@@ -52,4 +62,4 @@ class Body():
         if abs(self.velocity.y) < 0.1:
             self.velocity.y = 0
         else:
-            self.velocity.y *= -0.9
+            self.velocity.y *= -0.3

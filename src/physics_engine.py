@@ -16,7 +16,8 @@ class PhysicsEngine():
             other_bodies = [b for b in self.bodies if b != body]
             for other in other_bodies:
                 if body.did_collide_with_body(other):
-                    body.handle_body_collision(other)
+                    print(body.body_id + ' collided with ' + other.body_id)
+                    body.handle_body_collision(other, 1)
 
             if not body.is_at_rest():
                 body.velocity.x += body.acceleration.x * time
