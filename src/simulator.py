@@ -6,7 +6,7 @@ import pygame as pg
 
 class Simulator():
     def __init__(self):
-        self.renderer = Renderer(800, 400)
+        self.renderer = Renderer(0,0)
         self.physics = PhysicsEngine()
         self.running = True
         self.simulation_start = time.perf_counter()
@@ -22,11 +22,12 @@ class Simulator():
         # num_bodies = int(input('select the number of bodies\n'))
         num_bodies = 1
         for i in range(num_bodies):
-            body = Body(velocity=Vec(0,7), position=Vec(4, 0.3),name=f'ball {i}')
+            body = Body(velocity=Vec(0, 3), name='1', mass = 5)
+            body.position.x = 3
             self.physics.bodies.append(body)
 
-        static_body = Body(velocity=Vec(-8,4), name='static', mass=5)
-        static_body.position.x = 9
+        static_body = Body(velocity=Vec(-9,0), name='2', mass=5)
+        static_body.position.x = 10
         self.physics.bodies.append(static_body)
 
         while self.running:
