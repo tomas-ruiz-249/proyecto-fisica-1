@@ -8,7 +8,10 @@ class PhysicsEngine():
     def __init__(self):
         self.bodies: List[Body] = []
         self.GRAV = Vec(0, 9.81)
-        self.elasticity = 0
+        self.elasticity = 1
+    
+    def test_func(self):
+        print('func got called')
     
     def physics_process(self, time: float):
         for body in self.bodies:

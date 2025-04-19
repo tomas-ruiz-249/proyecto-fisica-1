@@ -1,11 +1,11 @@
 from typing import List
 from body import *
 from math import e
-import pygame_menu as menu
+import pygame_menu as pg_menu
 import pygame as pg
 
 class Renderer():
-    def __init__(self, width:int = 0, height:int = 0):
+    def __init__(self, width:int = 0, height:int = 0 ):
         self.screen = pg.display.set_mode((width, height), vsync=1)
         self.WINDOW_WIDTH = self.screen.get_width()
         self.WINDOW_HEIGHT = self.screen.get_height()
@@ -14,6 +14,11 @@ class Renderer():
         self.VP_HEIGHT = self.viewport.get_height()
         self.METER = self.VP_WIDTH / 10
         self.ground_height = self.VP_HEIGHT * 0.1
+
+        self.menu_surface = pg.Surface((self.WINDOW_WIDTH - self.VP_WIDTH, self.WINDOW_HEIGHT))
+    
+    def get_menu_surface(self):
+        return self.menu_surface
     
     def flip_y(self, y: float):
         return self.VP_HEIGHT - y
@@ -37,16 +42,20 @@ class Renderer():
         self.viewport.fill('aquamarine3')
         new_y = self.flip_y(self.ground_height)
         ground_rect = pg.Rect(0, new_y, self.VP_WIDTH, self.VP_HEIGHT)
-        pg.draw.rect(self.viewport, 'black', ground_rect)
+        pg.draw.rect(self.viewport, 'grey', ground_rect)
     
-    def render_process(self, bodies: List[Body]):
+    def draw_menu(self, menu: pg_menu.Menu):
+        menu.mainloop(self.menu_surface)
+    
+    def render_process(self, bodies: List[Body], menu: pg_menu.Menu):
         #draw simulation
         self.screen.fill('white')
-        self.viewport.fill('gray')
         self.draw_background()
         self.draw_bodies(bodies)
+        self.draw_menu(menu)
         self.screen.blit(self.viewport, (0,0))
-        pg.display.flip()
+        self.screen.blit(self.menu_surface, (self.VP_WIDTH,0))
+        pg.display.update()
     
     def mass_to_hue(self, n: float):
         max_hue = 270
