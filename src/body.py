@@ -42,7 +42,7 @@ class Body():
     
     def handle_body_collision(self, b: "Body", elasticity: float):
         #if intersecting, put one circle outside the other
-        ideal_dist = self.radius + b.radius
+        ideal_dist = self.radius + b.radius + 0.08
         real_dist = sqrt((self.position.x - b.position.x)**2 + (self.position.y - b.position.y)**2)
         offset = (ideal_dist - real_dist)/2
         angle = atan2(self.position.x - b.position.x, self.position.y - b.position.y)
