@@ -1,5 +1,6 @@
 from typing import List
 from body import *
+from menu import *
 from math import e
 import pygame as pg
 
@@ -15,7 +16,6 @@ class Renderer():
         self.ground_height = self.VP_HEIGHT * 0.1
 
         self.menu_surface = pg.Surface((self.WINDOW_WIDTH - self.VP_WIDTH, self.WINDOW_HEIGHT))
-        self.elasticity = elasticity
     
     def get_menu_surface(self):
         return self.menu_surface
@@ -29,37 +29,44 @@ class Renderer():
             y = self.flip_y(body.position.y * self.METER + self.ground_height)
             hue = pg.math.clamp(self.mass_to_hue(body.mass), 0, 270)
             body_color = pg.Color(0,0,0)
+            border_color = pg.Color(0,0,0)
             body_color.hsva = (hue, 50, 100, 100)
-            pg.draw.circle(self.viewport, body_color, (x,y), body.radius * self.METER)
+            border_color.hsva = (hue, 50, 80, 100)
+            pg.draw.circle(self.viewport, border_color, (x,y), body.radius * self.METER)
+            pg.draw.circle(self.viewport, body_color, (x,y), body.radius * 0.7 * self.METER)
 
-            font_size = int(body.radius * self.METER * 2)
+            font_size = int(body.radius * self.METER * 1.5)
             font = pg.font.Font(None, font_size)
             text_surface = font.render(body.name, True, (0,0,0))
             text_rect = text_surface.get_rect(center=(x,y))
             self.viewport.blit(text_surface, text_rect)
+
     
     def draw_background(self):
         self.viewport.fill('aquamarine3')
-
-        font_size = 30
-        font = pg.font.Font(None, font_size)
-        text_surface = font.render(f'{self.elasticity}', True, (0,0,0))
-        text_rect = text_surface.get_rect()
-        self.viewport.blit(text_surface, text_rect)
 
         new_y = self.flip_y(self.ground_height)
         ground_rect = pg.Rect(0, new_y, self.VP_WIDTH, self.VP_HEIGHT)
         pg.draw.rect(self.viewport, 'grey', ground_rect)
     
-    def draw_menu(self):
-        pass
+    def draw_menu(self, menu: Menu):
+        for layout in menu.elements:
+            if type(layout) == VLayout:
+                for btn in layout.elements:
+                    pg.draw.rect(self.menu_surface, (3,152,252), btn.area)
+
+                    font_size = int(btn.area.width * 2 / len(btn.text))
+                    font = pg.font.Font(None, font_size)
+                    text_surface = font.render(btn.text, True, (0,0,0))
+                    text_rect = text_surface.get_rect(center=btn.area.center)
+                    self.menu_surface.blit(text_surface, text_rect)
     
-    def render_process(self, bodies: List[Body]):
+    def render_process(self, bodies: List[Body], menu: Menu):
         #draw simulation
         self.screen.fill('white')
         self.draw_background()
         self.draw_bodies(bodies)
-        self.draw_menu()
+        self.draw_menu(menu)
         self.screen.blit(self.viewport, (0,0))
         self.screen.blit(self.menu_surface, (self.VP_WIDTH,0))
         pg.display.update()

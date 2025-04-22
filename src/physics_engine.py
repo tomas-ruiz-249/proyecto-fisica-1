@@ -13,19 +13,19 @@ class PhysicsEngine():
         self.bounce_border = True
     
     def add_body(self):
-        vel_1 = randint(5,15)
-        vel_2 = randint(5,8)
-        # vel_2 = vel_1
-        mass_1 = randint(1,20)
-        mass_2 = mass_1
-        # mass_2 = randint(1,20)
+        vel_1 = 15
+        # vel_2 = randint(8,10)
+        vel_2 = vel_1
+        mass_1 = randint(1,14)
+        # mass_2 = mass_1
+        mass_2 = randint(15,20)
         if len(self.bodies) > 1:
             self.bodies.pop(0)
             self.bodies.pop(0)
         body_1 = Body(mass=mass_1,
                         name=f'{mass_1}',
                         velocity=Vec(vel_1,5))
-        body_2 = Body(mass=mass_1,
+        body_2 = Body(mass=mass_2,
                         name=f'{mass_2}',
                         velocity=Vec(-vel_2,5))
         body_1.position.y = 1
@@ -34,8 +34,14 @@ class PhysicsEngine():
         self.bodies.append(body_1)
         self.bodies.append(body_2)
     
-    def physics_process(self, time: float):
+    def change_elasticity(self):
+        if self.elasticity >= 1:
+            self.elasticity = 0
+        else:
+            self.elasticity = round(self.elasticity + 0.1, 2)
         print(self.elasticity)
+    
+    def physics_process(self, time: float):
         for body in self.bodies:
             other_bodies = [b for b in self.bodies if b != body]
             for other in other_bodies:
