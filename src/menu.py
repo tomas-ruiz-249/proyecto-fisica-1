@@ -11,38 +11,30 @@ class Button():
             self.onClick()
 
 class Layout():
-    def __init__(self, elements: list[Button], offset: float, elem_width: float):
+    def __init__(self, elements: list[Button]):
         self.elements = elements
-        self.offset = offset
-        self.elem_width = elem_width
-
-class HLayout(Layout):
-    def __init__(self, elements: list[Button], offset: float, elem_width: float):
-        super().__init__(elements, offset, elem_width)  
-        count = 1
-        for b in elements:
-            b.area.update((offset + elem_width) * count,
-                          offset,
-                          elem_width,
-                          elem_width * 0.6)
-            count += 1
-
-class VLayout(Layout):
-    def __init__(self, elements: list[Button], offset: float, elem_width: float):
-        super().__init__(elements, offset, elem_width)  
+    
+    def set_area(self, layout_top: int, layout_width: int, layout_height:int):
+        btn_width = layout_width / len(self.elements)
         count = 0
-        elem_height = elem_width * 0.5
-        for b in elements:
-            b.area.update(offset,
-                          (elem_height + offset) * count + offset,
-                          elem_width,
-                          elem_height)
+        for btn in self.elements:
+            btn.area.update(count * btn_width,
+                            layout_top,
+                            btn_width - 1,
+                            layout_height-1)
             count += 1
+
 
 class Menu():
-    def __init__(self, elements: list[Layout], color: pg.Color = None):
+    def __init__(self, elements: list[Layout], menuHeight: int, menuWidth: int, color: pg.Color = None):
         self.elements = elements
         self.color = color if color != None else pg.Color(3, 152, 252)
+        self.layout_height = menuHeight / len(elements)
+        self.layout_width = menuWidth
+        count = 0
+        for layout in elements:
+            layout.set_area(count * self.layout_height, menuWidth, self.layout_height)
+            count += 1
     
     def check_for_click(self, pos: tuple[int, int]):
         for layout in self.elements:

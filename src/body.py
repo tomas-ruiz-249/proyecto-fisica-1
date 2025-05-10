@@ -42,7 +42,7 @@ class Body():
     
     def handle_body_collision(self, b: "Body", elasticity: float):
         #if intersecting, put one circle outside the other
-        ideal_dist = self.radius + b.radius + 0.08
+        ideal_dist = self.radius + b.radius
         real_dist = sqrt((self.position.x - b.position.x)**2 + (self.position.y - b.position.y)**2)
         offset = (ideal_dist - real_dist)/2
         angle = atan2(self.position.x - b.position.x, self.position.y - b.position.y)
@@ -62,13 +62,13 @@ class Body():
         vel_b_tan = b.velocity - vel_b_normal * normal
 
         new_vel_a_normal = self.mass * vel_a_normal + b.mass * vel_b_normal
-        new_vel_a_normal -= b.mass * elasticity * (vel_a_normal)
+        new_vel_a_normal -= b.mass * elasticity * (vel_a_normal - vel_b_normal)
         new_vel_a_normal /= self.mass + b.mass
         new_vel_a_normal = new_vel_a_normal * normal
         self.velocity = new_vel_a_normal + vel_a_tan 
 
         new_vel_b_normal = self.mass * vel_a_normal + b.mass * vel_b_normal
-        new_vel_b_normal += self.mass * elasticity * (vel_a_normal)
+        new_vel_b_normal += self.mass * elasticity * (vel_a_normal - vel_b_normal)
         new_vel_b_normal /= self.mass + b.mass
         new_vel_b_normal = new_vel_b_normal * normal
         b.velocity = new_vel_b_normal + vel_b_tan
@@ -82,7 +82,7 @@ class Body():
     
     def handle_floor_collision(self):
         self.position.y = self.radius 
-        if abs(self.velocity.y) < 0.1:
+        if abs(self.velocity.y) < 1.2:
             self.velocity.y = 0
         else:
             self.velocity.y *= -0.3
